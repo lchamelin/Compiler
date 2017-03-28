@@ -1,0 +1,12 @@
+graph g {
+  a [label="a", shape="none"]
+  b [label="b", shape="none"]
+  c [label="c", shape="none"]
+  0 [label="+", xlabel="a", shape="circle"]
+  d [label="d", shape="none"]
+  1 [label="-", xlabel="b", shape="circle"]
+  2 [label="+", xlabel="c", shape="circle"]
+  e [label="e", shape="none"]
+  3 [label="+", xlabel="e", shape="circle"]
+  {rank=sink a b c d e }
+}

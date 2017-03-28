@@ -1,0 +1,6 @@
+LIVE: a b c;
+
+t1 = 1 + c
+t2 = t1 + a
+t3 = t1 * b
+c = t3
