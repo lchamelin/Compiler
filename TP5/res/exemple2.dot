@@ -7,5 +7,9 @@ graph g {
   1 [label="-", xlabel="b", shape="circle"]
   2 [label="+", xlabel="c", shape="circle"]
   3 [label="-", xlabel="d", shape="circle"]
+  0 -- c
+  1 -- d
+  2 -- c
+  3 -- d
   {rank=sink a b c d }
 }

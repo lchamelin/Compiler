@@ -9,5 +9,8 @@ graph g {
   t3 [label="t3", shape="none"]
   b [label="b", shape="none"]
   2 [label="*", xlabel="t3", shape="circle"]
+  0 -- c
+  1 -- a
+  2 -- b
   {rank=sink 1 a b c t1 t2 t3 }
 }

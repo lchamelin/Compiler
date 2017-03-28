@@ -3,6 +3,9 @@ import java.util.HashMap;
 import java.io.PrintWriter;
 import java.io.IOException;
 
+
+
+
 public class PrintExpressionDAGVisitor implements ParserVisitor
 {
 
@@ -10,7 +13,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   HashSet<String> m_nodes = new HashSet<String>();
   HashSet<String> m_leafs = new HashSet<String>();
   HashSet<String> m_links = new HashSet<String>();
-
+  String enfant = "";
+  String myid = "";
   String m_outputFileName = null;
   PrintWriter m_writer = null;
 
@@ -89,10 +93,16 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     node.childrenAccept(this, null);
 
     ASTIdentifier assigned = (ASTIdentifier)node.jjtGetChild(0);
-
+    //System.out.print(assigned.getValue());
     addNode(String.valueOf(m_nodes.size()), node.getOp(), assigned.getValue());
-
+    
+    String parent = node.jjtGetChild(0).jjtAccept(this, data).toString();
+    String operation = node.getOp().toString();
+    System.out.print(myid);
+    addLink(myid, enfant);
+    
     // TODO:: Comment lier le noeud à ces enfants?
+    //System.out.print(enfant);
     // TODO:: Comment fusionner ce noeud a un autre si si l'expression est identique?
 
     return null;
@@ -106,6 +116,12 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     ASTIdentifier assigned = (ASTIdentifier)node.jjtGetChild(0);
 
     addNode(String.valueOf(m_nodes.size()), "minus", assigned.getValue());
+
+
+    //String enfant = "";
+
+    
+    
 
     // TODO:: Quoi faire lorsque le noeud est un unaire?
 
@@ -135,7 +151,12 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTExpr node, Object data) {
   	node.childrenAccept(this, null);
 
-  	return null;
+    
+
+    enfant = node.jjtGetChild(0).jjtAccept(this, data).toString();
+    //System.out.print(enfant);
+
+  	return enfant;
   }
 
   // Paramètre data: On ne transmet rien aux enfants
@@ -143,7 +164,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTIntValue node, Object data) {
     addLeaf(String.valueOf(node.getValue()));
 
-    return null;
+    //System.out.print(node.getValue());
+    return node.getValue();
   }
 
   // Paramètre data: On ne transmet rien aux enfants
@@ -153,7 +175,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     // Est-ce que ca peut causer des problèmes?
     addLeaf(node.getValue());
 
-    return null;
+    //System.out.print(node.getValue());
+    return node.getValue();
   }
 
   public void addLink(String id1, String id2)
@@ -177,6 +200,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   }
 
   public void addNode(String uniqueId, String label, String notation) {
+    myid = uniqueId;
     if(m_nodes.contains(uniqueId))
       return;
 
