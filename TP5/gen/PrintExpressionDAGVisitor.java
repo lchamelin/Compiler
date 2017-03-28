@@ -1,5 +1,6 @@
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Vector;
 import java.io.PrintWriter;
 import java.io.IOException;
 
@@ -13,8 +14,12 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   HashSet<String> m_nodes = new HashSet<String>();
   HashSet<String> m_leafs = new HashSet<String>();
   HashSet<String> m_links = new HashSet<String>();
+  Vector<String> v_nodes = new Vector<String>();
+  HashMap<Integer, String> myMap = new HashMap<Integer, String>();
+
+  Integer counter = 0;
   String enfant = "";
-  String ndoeId = "";
+  String nodeId = "";
   String m_outputFileName = null;
   PrintWriter m_writer = null;
 
@@ -100,12 +105,55 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     String enfant1 = node.jjtGetChild(1).jjtAccept(this, data).toString();
     String enfant2 = node.jjtGetChild(2).jjtAccept(this, data).toString();
     String operation = node.getOp().toString();
-    //System.out.print(ndoeId);
-    addLink(ndoeId, enfant1);
-    addLink(ndoeId, enfant2);
+
+    
+    for (String parentNode : v_nodes) {         
+      //System.out.println("Node = " + parentNode);
+      if(parentNode.equals(enfant1)) {
+        System.out.println("Parent: " + parentNode);
+        System.out.println("Enfant1: " + enfant1);
+        System.out.println("Node vers node");
+        addLink(nodeId, myMap.get(v_nodes.indexOf(enfant1)));
+      }
+      else {
+        addLink(nodeId, enfant1);
+      }
+
+      if(parentNode.equals(enfant2)) {
+        System.out.println("Parent: " + parentNode);
+        System.out.println("Enfant2: " + enfant2);
+        System.out.println("Node vers node");
+        addLink(nodeId, myMap.get(v_nodes.indexOf(enfant2)));
+      }
+      else {
+        addLink(nodeId, enfant2); 
+      }
+    }
+    //System.out.println("Enfants: " + enfant1 + "   " + enfant2);
+    /*
+    if(v_nodes.contains(enfant1)) {
+      String test = myMap.get(v_nodes.indexOf(enfant1));
+      //System.out.println(test);
+      addLink(test, enfant1);
+    }
+    else if(v_nodes.contains(enfant2)) {
+      String test2 = myMap.get(v_nodes.indexOf(enfant2));
+      //System.out.println(test2);
+      addLink(test2, enfant1);
+    }
+    else {
+      addLink(nodeId, enfant1);
+      addLink(nodeId, enfant2); 
+    }
+    */
+    System.out.println(enfant1);
+    System.out.println(enfant2);
+    System.out.println("BREAK");
+    //addLink(nodeId, enfant1);
+    //addLink(nodeId, enfant2); 
     
     // TODO:: Comment lier le noeud à ces enfants?
-    //System.out.print(enfant2);
+
     // TODO:: Comment fusionner ce noeud a un autre si si l'expression est identique?
 
     return null;
@@ -160,6 +208,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTIntValue node, Object data) {
     addLeaf(String.valueOf(node.getValue()));
 
+
     //System.out.print(node.getValue());
     return node.getValue();
   }
@@ -169,10 +218,18 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTIdentifier node, Object data) {
     // TODO:: Présentement on imprime l'identifiant sans index, "a" au lieu de "a0"
     // Est-ce que ca peut causer des problèmes?
-    addLeaf(node.getValue());
 
-    //System.out.print(node.getValue());
-    return node.getValue();
+    if(v_nodes.contains(node.getValue())) {
+      //System.out.println(node.getValue());
+      //addLeaf(node.getValue());
+      return node.getValue();
+    }
+    else {
+      addLeaf(node.getValue() + "0");
+      return node.getValue() + "0";
+    }
+  
+    //System.out.print(node.getValue());  
   }
 
   public void addLink(String id1, String id2)
@@ -196,11 +253,13 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   }
 
   public void addNode(String uniqueId, String label, String notation) {
-    ndoeId = uniqueId;
+    nodeId = uniqueId;
     if(m_nodes.contains(uniqueId))
       return;
-
+    v_nodes.add(notation);
     m_nodes.add(uniqueId);
+    myMap.put(counter, uniqueId);
+    counter++;
     m_writer.println("  " + uniqueId + " [label=\"" + label + "\", xlabel=\"" + notation + "\", shape=\"circle\"]");
   }
 }
