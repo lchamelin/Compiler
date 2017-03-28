@@ -14,7 +14,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   HashSet<String> m_leafs = new HashSet<String>();
   HashSet<String> m_links = new HashSet<String>();
   String enfant = "";
-  String myid = "";
+  String ndoeId = "";
   String m_outputFileName = null;
   PrintWriter m_writer = null;
 
@@ -97,12 +97,15 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     addNode(String.valueOf(m_nodes.size()), node.getOp(), assigned.getValue());
     
     String parent = node.jjtGetChild(0).jjtAccept(this, data).toString();
+    String enfant1 = node.jjtGetChild(1).jjtAccept(this, data).toString();
+    String enfant2 = node.jjtGetChild(2).jjtAccept(this, data).toString();
     String operation = node.getOp().toString();
-    System.out.print(myid);
-    addLink(myid, enfant);
+    //System.out.print(ndoeId);
+    addLink(ndoeId, enfant1);
+    addLink(ndoeId, enfant2);
     
     // TODO:: Comment lier le noeud à ces enfants?
-    //System.out.print(enfant);
+    //System.out.print(enfant2);
     // TODO:: Comment fusionner ce noeud a un autre si si l'expression est identique?
 
     return null;
@@ -116,12 +119,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     ASTIdentifier assigned = (ASTIdentifier)node.jjtGetChild(0);
 
     addNode(String.valueOf(m_nodes.size()), "minus", assigned.getValue());
-
-
-    //String enfant = "";
-
-    
-    
 
     // TODO:: Quoi faire lorsque le noeud est un unaire?
 
@@ -151,9 +148,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTExpr node, Object data) {
   	node.childrenAccept(this, null);
 
-    
-
     enfant = node.jjtGetChild(0).jjtAccept(this, data).toString();
+
     //System.out.print(enfant);
 
   	return enfant;
@@ -194,13 +190,13 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public void addLeaf(String uniqueLabel) {
     if(m_leafs.contains(uniqueLabel))
       return;
-
+    //System.out.print(uniqueLabel);
     m_leafs.add(uniqueLabel);
     m_writer.println("  " + uniqueLabel + " [label=\"" + uniqueLabel + "\", shape=\"none\"]");
   }
 
   public void addNode(String uniqueId, String label, String notation) {
-    myid = uniqueId;
+    ndoeId = uniqueId;
     if(m_nodes.contains(uniqueId))
       return;
 

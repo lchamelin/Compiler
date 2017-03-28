@@ -8,9 +8,13 @@ graph g {
   2 [label="+", xlabel="c", shape="circle"]
   e [label="e", shape="none"]
   3 [label="+", xlabel="e", shape="circle"]
+  3 -- b
+  0 -- b
   0 -- c
+  1 -- b
   1 -- d
   2 -- d
+  2 -- c
   3 -- c
   {rank=sink a b c d e }
 }
