@@ -1,10 +1,10 @@
 graph g {
   num1 [label="1", shape="none"]
   c0 [label="c0", shape="none"]
-  0 [label="+", xlabel="t1", shape="circle"]
   a0 [label="a0", shape="none"]
-  1 [label="+", xlabel="t2", shape="circle"]
   b0 [label="b0", shape="none"]
+  0 [label="+", xlabel="t1", shape="circle"]
+  1 [label="+", xlabel="t2", shape="circle"]
   2 [label="*", xlabel="t3", shape="circle"]
   3 [label="=", xlabel="c", shape="circle"]
   3 -- 2

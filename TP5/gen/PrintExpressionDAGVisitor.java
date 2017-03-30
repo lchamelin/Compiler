@@ -12,6 +12,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   HashSet<String> m_leafs = new HashSet<String>();
   HashSet<String> m_links = new HashSet<String>();
   Vector<String> v_nodes = new Vector<String>();
+  Vector<Vector<String>> v_print = new Vector<Vector<String>>();
+  Vector<Vector<String>> compare_print = new Vector<Vector<String>>();
   HashMap<Integer, String> myMap = new HashMap<Integer, String>();
 
   Integer counter = 0;
@@ -46,13 +48,54 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     m_writer.println("graph g {");
 
     // Visite les noeuds pour construire l'arbre et imprimer les noeuds
+
     // TODO:: Est-ce que ce serait mieux de ne pas imprimer les noeuds durant la visite, mais par la suite?
     node.childrenAccept(this, null);
+
+    Integer indexLoop = 0;
+    Integer indexLoop2 = 0;
+    Boolean dejaTrouve = false;
+    Boolean toWrite = false;
+    for(Vector<String> i: compare_print) {
+      String operator = i.get(1);
+      String enf1 = i.get(2);
+      String enf2 = i.get(3);
+      String identiqueAdd = "";
+      Boolean isIdentique = false;
+      
+
+      indexLoop2 = 0;
+      for(Vector<String> j: compare_print) {
+        if(j.get(1).equals(operator) && indexLoop != indexLoop2){
+          if(j.get(2).equals(enf1) && j.get(3).equals(enf2)) {
+            if(!dejaTrouve) {
+              isIdentique = true;
+              dejaTrouve = true;
+            }
+            
+            identiqueAdd = j.get(0);
+          }
+        }
+        indexLoop2++;
+      }
+
+      if(isIdentique) {
+        m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + ", " + identiqueAdd  + "\", shape=\"circle\"]");
+        toWrite = true;
+      }
+      else {
+          m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + "\", shape=\"circle\"]");
+      }
+
+      indexLoop++;
+    }
 
     // La visite mémorise les liens que l'on imprime ensuite
     for (String link : m_links) {
       m_writer.println("  " + link);
     }
+
+
 
     // rank = sink force les noeuds suivant d'être au plus bas du graphe
     // TODO:: Est-ce que c'est suffisant pour avoir une structure d'arbre?
@@ -97,7 +140,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTAssignStmt node, Object data) {
     ASTIdentifier assigned = (ASTIdentifier)node.jjtGetChild(0);
-
+    
     String enfant1 = node.jjtGetChild(1).jjtAccept(this, data).toString();
     String enfant2 = node.jjtGetChild(2).jjtAccept(this, data).toString();
 
@@ -119,13 +162,28 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     if(!enfant1Pres) {
       addLink(String.valueOf(m_nodes.size()), enfant1);
     }
+
     if(!enfant2Pres) {
       addLink(String.valueOf(m_nodes.size()), enfant2);
     }
-
+    storeData(assigned.getValue(), node.getOp(), enfant1, enfant2, String.valueOf(m_nodes.size()));
     addNode(String.valueOf(m_nodes.size()), node.getOp(), assigned.getValue());
 
+    
+
     return null;
+  }
+
+  public void storeData(String parent, String op, String enfant1, String enfant2, String uniqueId) {
+    Vector<String> all_nodes = new Vector<String>();
+    
+    all_nodes.add(parent);
+    all_nodes.add(op);
+    all_nodes.add(enfant1);
+    all_nodes.add(enfant2);
+    all_nodes.add(uniqueId);
+
+    compare_print.add(all_nodes);
   }
 
 
@@ -166,9 +224,10 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     if(!enfant1Pres) {
       addLink(String.valueOf(m_nodes.size()), enfant1);
     }
-
+    storeData(assigned.getValue(), "=", enfant1, "", String.valueOf(m_nodes.size()));
     addNode(String.valueOf(m_nodes.size()), "=", assigned.getValue());
 
+    
 
     return null;
   }
@@ -194,7 +253,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTIdentifier node, Object data) {
     // TODO:: Présentement on imprime l'identifiant sans index, "a" au lieu de "a0"
     // Est-ce que ca peut causer des problèmes?
-
     if(v_nodes.contains(node.getValue())) {
       return node.getValue();
     }
@@ -224,10 +282,15 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public void addNode(String uniqueId, String label, String notation) {
     if(m_nodes.contains(uniqueId))
       return;
+    Vector<String> n_nodes = new Vector<String>();
+    n_nodes.add(uniqueId);
+    n_nodes.add(label);
+    n_nodes.add(notation);
     v_nodes.add(notation);
     m_nodes.add(uniqueId);
     myMap.put(counter, uniqueId);
     counter++;
-    m_writer.println("  " + uniqueId + " [label=\"" + label + "\", xlabel=\"" + notation + "\", shape=\"circle\"]");
+    v_print.add(n_nodes);
+    //m_writer.println("  " + uniqueId + " [label=\"" + label + "\", xlabel=\"" + notation + "\", shape=\"circle\"]");
   }
 }

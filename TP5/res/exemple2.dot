@@ -1,9 +1,9 @@
 graph g {
   b0 [label="b0", shape="none"]
   c0 [label="c0", shape="none"]
-  0 [label="+", xlabel="a", shape="circle"]
   d0 [label="d0", shape="none"]
-  1 [label="-", xlabel="b", shape="circle"]
+  0 [label="+", xlabel="a", shape="circle"]
+  1 [label="-", xlabel="b, d", shape="circle"]
   2 [label="+", xlabel="c", shape="circle"]
   3 [label="-", xlabel="d", shape="circle"]
   3 -- 0
