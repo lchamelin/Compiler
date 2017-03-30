@@ -1,16 +1,18 @@
 graph g {
-  1 [label="1", shape="none"]
+  num1 [label="1", shape="none"]
   c0 [label="c0", shape="none"]
   0 [label="+", xlabel="t1", shape="circle"]
   a0 [label="a0", shape="none"]
   1 [label="+", xlabel="t2", shape="circle"]
   b0 [label="b0", shape="none"]
   2 [label="*", xlabel="t3", shape="circle"]
-  0 -- 1
+  3 [label="=", xlabel="c", shape="circle"]
+  3 -- 2
   2 -- b0
   2 -- 0
+  0 -- num1
   0 -- c0
   1 -- 0
   1 -- a0
-  {rank=sink 1 c0 b0 a0 }
+  {rank=sink num1 c0 b0 a0 }
 }

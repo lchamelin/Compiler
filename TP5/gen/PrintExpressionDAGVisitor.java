@@ -18,6 +18,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   String m_outputFileName = null;
   PrintWriter m_writer = null;
 
+
   public PrintExpressionDAGVisitor(String outputFilename)  {
     m_outputFileName = outputFilename;
   }
@@ -29,6 +30,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(SimpleNode node, Object data) {
     return null;
   }
+
 
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
@@ -66,12 +68,14 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   	return null;
   }
 
+
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTBlock node, Object data) {
   	node.childrenAccept(this, null);
   	return null;
   }
+
 
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
@@ -80,12 +84,14 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   	return null;
   }
 
+
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTStmt node, Object data) {
   	node.childrenAccept(this, null);
   	return null;
   }
+
 
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
@@ -119,10 +125,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
 
     addNode(String.valueOf(m_nodes.size()), node.getOp(), assigned.getValue());
 
-    // TODO:: Comment lier le noeud à ces enfants?
-
-    // TODO:: Comment fusionner ce noeud a un autre si si l'expression est identique?
-
     return null;
   }
 
@@ -130,8 +132,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTAssignUnaryStmt node, Object data) {
-    //node.childrenAccept(this, null);
-
     ASTIdentifier assigned = (ASTIdentifier)node.jjtGetChild(0);
 
     addNode(String.valueOf(m_nodes.size()), "minus", assigned.getValue());
@@ -148,14 +148,27 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTAssignDirectStmt node, Object data) {
-    //node.childrenAccept(this, null);
-
     ASTIdentifier assigned = (ASTIdentifier)node.jjtGetChild(0);
-
     // TODO:: Quoi faire lorsque le noeud est une assignation directe?
+    
+    Boolean enfant1Pres = false;
 
     // TODO:: Comment lier le noeud à son enfant?
+    String enfant1 = node.jjtGetChild(1).jjtAccept(this, data).toString();
     // TODO:: Comment fusionner ce noeud a un autre si si l'expression est identique?
+    for (String parentNode : v_nodes) {         
+      if(parentNode.equals(enfant1)) {
+        addLink(String.valueOf(m_nodes.size()), myMap.get(v_nodes.indexOf(enfant1)));
+        enfant1Pres = true;
+      }
+    }
+
+    if(!enfant1Pres) {
+      addLink(String.valueOf(m_nodes.size()), enfant1);
+    }
+
+    addNode(String.valueOf(m_nodes.size()), "=", assigned.getValue());
+
 
     return null;
   }
@@ -171,8 +184,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTIntValue node, Object data) {
-    addLeaf(String.valueOf(node.getValue()));
-    return node.getValue();
+    addLeaf("num" + String.valueOf(node.getValue()), String.valueOf(node.getValue()));
+    return "num" + String.valueOf(node.getValue());
   }
 
 
@@ -186,7 +199,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
       return node.getValue();
     }
     else {
-      addLeaf(node.getValue() + "0");
+      addLeaf(node.getValue() + "0",node.getValue() + "0");
   
       return node.getValue() + "0";
     }
@@ -195,18 +208,16 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
 
   public void addLink(String id1, String id2)
   {
-
     m_links.add(id1 + " -- " + id2);
-
   }
 
 
-  public void addLeaf(String uniqueLabel) {
+  public void addLeaf(String uniqueLabel, String val) {
     if(m_leafs.contains(uniqueLabel))
       return;
 
     m_leafs.add(uniqueLabel);
-    m_writer.println("  " + uniqueLabel + " [label=\"" + uniqueLabel + "\", shape=\"none\"]");
+    m_writer.println("  " + uniqueLabel +  " [label=\"" + val + "\", shape=\"none\"]");
   }
 
 
