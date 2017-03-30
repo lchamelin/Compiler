@@ -55,7 +55,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     Integer indexLoop = 0;
     Integer indexLoop2 = 0;
     Boolean dejaTrouve = false;
-    Boolean toWrite = false;
+    Integer indexToSkip = -1;
+
     for(Vector<String> i: compare_print) {
       String operator = i.get(1);
       String enf1 = i.get(2);
@@ -68,6 +69,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
       for(Vector<String> j: compare_print) {
         if(j.get(1).equals(operator) && indexLoop != indexLoop2){
           if(j.get(2).equals(enf1) && j.get(3).equals(enf2)) {
+            indexToSkip = indexLoop;
+
             if(!dejaTrouve) {
               isIdentique = true;
               dejaTrouve = true;
@@ -81,20 +84,23 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
 
       if(isIdentique) {
         m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + ", " + identiqueAdd  + "\", shape=\"circle\"]");
-        toWrite = true;
+      }
+      else if(i.get(4).equals(String.valueOf(indexToSkip))){
+        //System.out.println(i.get(4));
+        //System.out.println(i);
       }
       else {
-          m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + "\", shape=\"circle\"]");
+        m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + "\", shape=\"circle\"]");
       }
-
       indexLoop++;
     }
 
     // La visite mémorise les liens que l'on imprime ensuite
     for (String link : m_links) {
-      m_writer.println("  " + link);
+      if(!link.contains(String.valueOf(indexToSkip))) {
+        m_writer.println("  " + link);
+      }
     }
-
 
 
     // rank = sink force les noeuds suivant d'être au plus bas du graphe
@@ -154,6 +160,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
       }
 
       if(parentNode.equals(enfant2)) {
+
         addLink(String.valueOf(m_nodes.size()), myMap.get(v_nodes.indexOf(enfant2)));
         enfant2Pres = true;
       }
@@ -166,10 +173,9 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     if(!enfant2Pres) {
       addLink(String.valueOf(m_nodes.size()), enfant2);
     }
+
     storeData(assigned.getValue(), node.getOp(), enfant1, enfant2, String.valueOf(m_nodes.size()));
     addNode(String.valueOf(m_nodes.size()), node.getOp(), assigned.getValue());
-
-    
 
     return null;
   }
@@ -224,10 +230,9 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     if(!enfant1Pres) {
       addLink(String.valueOf(m_nodes.size()), enfant1);
     }
+
     storeData(assigned.getValue(), "=", enfant1, "", String.valueOf(m_nodes.size()));
     addNode(String.valueOf(m_nodes.size()), "=", assigned.getValue());
-
-    
 
     return null;
   }
@@ -264,8 +269,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   }
 
 
-  public void addLink(String id1, String id2)
-  {
+  public void addLink(String id1, String id2) {
     m_links.add(id1 + " -- " + id2);
   }
 

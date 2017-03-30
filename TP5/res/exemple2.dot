@@ -5,12 +5,9 @@ graph g {
   0 [label="+", xlabel="a", shape="circle"]
   1 [label="-", xlabel="b, d", shape="circle"]
   2 [label="+", xlabel="c", shape="circle"]
-  3 [label="-", xlabel="d", shape="circle"]
-  3 -- 0
   2 -- 1
   1 -- d0
   0 -- c0
-  3 -- d0
   1 -- 0
   0 -- b0
   2 -- c0
