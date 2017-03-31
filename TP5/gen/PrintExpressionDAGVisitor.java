@@ -90,7 +90,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
         //System.out.println(i);
       }
       else {
-        m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + "\", shape=\"circle\"]");
+        m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + "\", shape=\"circle\"" + ", color=\"red\"]");
       }
       indexLoop++;
     }
