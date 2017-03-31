@@ -19,4 +19,8 @@ public class ASTIdentifier extends SimpleNode {
   private String value = null;
   public void setValue(String v) { value = v; }
   public String getValue() { return value; }
+
+  private String estMort = null;
+  public void setMort(String v) { estMort = v; }
+  public String getMort() { return estMort; }
 }

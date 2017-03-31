@@ -1,4 +1,3 @@
-a = b + c
 b = b - d
 c = c + d
 e = b + c

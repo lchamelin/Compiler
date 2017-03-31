@@ -214,11 +214,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
 
     addNode(String.valueOf(m_nodes.size()), "minus", assigned.getValue());
 
-    // TODO:: Quoi faire lorsque le noeud est un unaire?
-
-    // TODO:: Comment lier le noeud à son enfant?
-    // TODO:: Comment fusionner ce noeud a un autre si si l'expression est identique?
-
     return null;
   }
 
