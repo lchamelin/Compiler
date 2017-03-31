@@ -12,11 +12,11 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   HashSet<String> m_leafs = new HashSet<String>();
   HashSet<String> m_links = new HashSet<String>();
 
+  //Data struture that we are more comfortable to manipulate
   Vector<String> v_nodes = new Vector<String>();
   Vector<Vector<String>> v_print = new Vector<Vector<String>>();
   Vector<Vector<String>> compare_print = new Vector<Vector<String>>();
   HashMap<Integer, String> myMap = new HashMap<Integer, String>();
-
   Vector<String> lives = new Vector<String>();
   Vector<String> enfants = new Vector<String>();
 
@@ -29,7 +29,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     m_outputFileName = outputFilename;
   }
 
-  // TODO:: Présentement data est inutilisée, pouvez-vous vous en servir pour autre chose?
 
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
@@ -51,9 +50,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
 
     m_writer.println("graph g {");
 
-    // Visite les noeuds pour construire l'arbre et imprimer les noeuds
-
-    // TODO:: Est-ce que ce serait mieux de ne pas imprimer les noeuds durant la visite, mais par la suite?
     node.childrenAccept(this, null);
 
     Integer indexLoop = 0;
@@ -61,6 +57,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     Boolean dejaTrouve = false;
     Integer indexToSkip = -1;
 
+    //Loop to print the dot file and the graph at the end of the execution
     for(Vector<String> i: compare_print) {
       String operator = i.get(1);
       String enf1 = i.get(2);
@@ -113,9 +110,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
       }
     }
 
-
-    // rank = sink force les noeuds suivant d'être au plus bas du graphe
-    // TODO:: Est-ce que c'est suffisant pour avoir une structure d'arbre?
     m_writer.print("  {rank=sink ");
     for (String leaf : m_leafs) {
       m_writer.print(leaf + " ");
@@ -142,6 +136,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTLive node, Object data) {
   	node.childrenAccept(this, null);
     
+    //Append the lives var to the vector
     lives = node.getLive();
 
   	return null;
@@ -161,12 +156,15 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTAssignStmt node, Object data) {
     ASTIdentifier assigned = (ASTIdentifier)node.jjtGetChild(0);
     
+    //Get the values of the node
     String enfant1 = node.jjtGetChild(1).jjtAccept(this, data).toString();
     String enfant2 = node.jjtGetChild(2).jjtAccept(this, data).toString();
 
+    //Verify if this child is already there
     Boolean enfant1Pres = false;
     Boolean enfant2Pres = false;
     
+    // We add the the link between node and leaf or node to node
     for (String parentNode : v_nodes) {         
       if(parentNode.equals(enfant1)) {
         addLink(String.valueOf(m_nodes.size()), myMap.get(v_nodes.indexOf(enfant1)));
@@ -188,15 +186,19 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
       addLink(String.valueOf(m_nodes.size()), enfant2);
     }
 
+    //Function to store the data to print at the end
     storeData(assigned.getValue(), node.getOp(), enfant1, enfant2, String.valueOf(m_nodes.size()));
+
     addNode(String.valueOf(m_nodes.size()), node.getOp(), assigned.getValue());
 
     return null;
   }
 
+  //Function to store the data to print at the end
   public void storeData(String parent, String op, String enfant1, String enfant2, String uniqueId) {
     Vector<String> all_nodes = new Vector<String>();
     
+    //Add the data to a vector
     all_nodes.add(parent);
     all_nodes.add(op);
     all_nodes.add(enfant1);
@@ -222,13 +224,12 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTAssignDirectStmt node, Object data) {
     ASTIdentifier assigned = (ASTIdentifier)node.jjtGetChild(0);
-    // TODO:: Quoi faire lorsque le noeud est une assignation directe?
-    
+    //Verify if this child is already there
     Boolean enfant1Pres = false;
 
-    // TODO:: Comment lier le noeud à son enfant?
     String enfant1 = node.jjtGetChild(1).jjtAccept(this, data).toString();
-    // TODO:: Comment fusionner ce noeud a un autre si si l'expression est identique?
+
+    //Same structure as ASTAssignStmt
     for (String parentNode : v_nodes) {         
       if(parentNode.equals(enfant1)) {
         addLink(String.valueOf(m_nodes.size()), myMap.get(v_nodes.indexOf(enfant1)));
@@ -240,7 +241,9 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
       addLink(String.valueOf(m_nodes.size()), enfant1);
     }
 
+    //Function to store the data to print at the end
     storeData(assigned.getValue(), "=", enfant1, "", String.valueOf(m_nodes.size()));
+
     addNode(String.valueOf(m_nodes.size()), "=", assigned.getValue());
 
     return null;
@@ -265,13 +268,13 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   // Paramètre data: On ne transmet rien aux enfants
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTIdentifier node, Object data) {
-    // TODO:: Présentement on imprime l'identifiant sans index, "a" au lieu de "a0"
-    // Est-ce que ca peut causer des problèmes?
     enfants.add(node.getValue());
+
     if(v_nodes.contains(node.getValue())) {
       return node.getValue();
     }
     else {
+      //we add a 0 for the index if its the first time we see this node
       addLeaf(node.getValue() + "0",node.getValue() + "0");
   
       return node.getValue() + "0";
@@ -296,6 +299,8 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public void addNode(String uniqueId, String label, String notation) {
     if(m_nodes.contains(uniqueId))
       return;
+
+    //Get the all the data to print at the end
     Vector<String> n_nodes = new Vector<String>();
     n_nodes.add(uniqueId);
     n_nodes.add(label);
@@ -305,6 +310,5 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
     myMap.put(counter, uniqueId);
     counter++;
     v_print.add(n_nodes);
-    //m_writer.println("  " + uniqueId + " [label=\"" + label + "\", xlabel=\"" + notation + "\", shape=\"circle\"]");
   }
 }

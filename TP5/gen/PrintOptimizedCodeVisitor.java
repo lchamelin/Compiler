@@ -7,9 +7,11 @@ public class PrintOptimizedCodeVisitor implements ParserVisitor
 
   String m_outputFileName = null;
   PrintWriter m_writer = null;
+  //Save the live var
   Vector<String> lives = new Vector<String>();
+  //Save all operand
   Vector<String> enfants = new Vector<String>();
-
+  //save all equations
   Vector<Vector<String>> to_write = new Vector<Vector<String>>();
 
 
@@ -37,15 +39,15 @@ public class PrintOptimizedCodeVisitor implements ParserVisitor
     // Visiter les enfants
     node.childrenAccept(this, null);
 
-    //System.out.println(to_write);
-
+    //Loop to collect all operand to verify if the assigned is used in the other instruction
     for(Vector<String> i: to_write) {
       enfants.add(i.get(1));
       enfants.add(i.get(2));
     }
-    System.out.println(enfants);
-    for(Vector<String> i: to_write) {
 
+    //We will write the lines in the file at the end so we can compare with the operand of all instructions
+    for(Vector<String> i: to_write) {
+      //Validation for death instruction
       if(lives.contains(i.get(0)) || enfants.contains(i.get(0))) {
         m_writer.println(i.get(0) + " = " + i.get(1) + " " + i.get(3) + " " + i.get(2));
       }
@@ -82,23 +84,20 @@ public class PrintOptimizedCodeVisitor implements ParserVisitor
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTAssignStmt node, Object data) {
     Vector<String> line_write = new Vector<String>();
-    // TODO:: Présentement on imprime seulement le code non-optimizé, comment corriger la situation?
-
-    // On ne visite pas les enfants puisque l'on va manuellement chercher leurs valeurs
-
-    // On n'a rien a transférer aux enfants
+    // Get the vallues to append to our vector to print
     String assigned = (String)node.jjtGetChild(0).jjtAccept(this, null);
     String left = (String)node.jjtGetChild(1).jjtAccept(this, null);
     String right = (String)node.jjtGetChild(2).jjtAccept(this, null);
     String operator = node.getOp();
+
+    //Append to vector
     line_write.add(assigned);
     line_write.add(left);
     line_write.add(right);
     line_write.add(operator);
 
     to_write.add(line_write);
-    //m_writer.println(assigned + " = " + left + " " + node.getOp() + " " + right);
-    
+
     return null;
   }
 
@@ -106,21 +105,17 @@ public class PrintOptimizedCodeVisitor implements ParserVisitor
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTAssignUnaryStmt node, Object data) {
     Vector<String> line_write = new Vector<String>();
-    // TODO:: Présentement on imprime seulement le code non-optimizé, comment corriger la situation?
-
-    // On ne visite pas les enfants puisque l'on va manuellement chercher leurs valeurs
-
-    // On n'a rien a transférer aux enfants
+    // Get the vallues to append to our vector to print
     String assigned = (String)node.jjtGetChild(0).jjtAccept(this, null);
     String left = (String)node.jjtGetChild(1).jjtAccept(this, null);
 
+    //Append to vector
     line_write.add(assigned);
     line_write.add(" minus " + left);
     line_write.add("");
     line_write.add("");
     to_write.add(line_write);
 
-    //m_writer.println(assigned + " = minus " + left);
     return null;
   }
 
@@ -128,20 +123,18 @@ public class PrintOptimizedCodeVisitor implements ParserVisitor
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTAssignDirectStmt node, Object data) {
     Vector<String> line_write = new Vector<String>();
-    // TODO:: Présentement on imprime seulement le code non-optimizé, comment corriger la situation?
-
-    // On ne visite pas les enfants puisque l'on va manuellement chercher leurs valeurs
-
-    // On n'a rien a transférer aux enfants
+    // Get the vallues to append to our vector to print
     String assigned = (String)node.jjtGetChild(0).jjtAccept(this, null);
     String left = (String)node.jjtGetChild(1).jjtAccept(this, null);
 
+    //Append to vector
     line_write.add(assigned);
     line_write.add(left);
     line_write.add("");
     line_write.add("");
+
     to_write.add(line_write);
-    //m_writer.println(assigned + " = " + left);
+
     return null;
   }
 
