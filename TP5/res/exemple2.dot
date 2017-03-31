@@ -2,9 +2,9 @@ graph g {
   b0 [label="b0", shape="none"]
   c0 [label="c0", shape="none"]
   d0 [label="d0", shape="none"]
-  0 [label="+", xlabel="a", shape="circle", color="red"]
+  0 [label="+", xlabel="a", shape="circle"]
   1 [label="-", xlabel="b, d", shape="circle"]
-  2 [label="+", xlabel="c", shape="circle", color="red"]
+  2 [label="+", xlabel="c", shape="circle"]
   2 -- 1
   1 -- d0
   0 -- c0

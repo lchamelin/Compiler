@@ -3,9 +3,9 @@ graph g {
   c0 [label="c0", shape="none"]
   d0 [label="d0", shape="none"]
   0 [label="+", xlabel="a", shape="circle", color="red"]
-  1 [label="-", xlabel="b", shape="circle", color="red"]
-  2 [label="+", xlabel="c", shape="circle", color="red"]
-  3 [label="+", xlabel="e", shape="circle", color="red"]
+  1 [label="-", xlabel="b", shape="circle"]
+  2 [label="+", xlabel="c", shape="circle"]
+  3 [label="+", xlabel="e", shape="circle"]
   3 -- 2
   3 -- 1
   1 -- b0

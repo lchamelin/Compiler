@@ -11,10 +11,14 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   HashSet<String> m_nodes = new HashSet<String>();
   HashSet<String> m_leafs = new HashSet<String>();
   HashSet<String> m_links = new HashSet<String>();
+
   Vector<String> v_nodes = new Vector<String>();
   Vector<Vector<String>> v_print = new Vector<Vector<String>>();
   Vector<Vector<String>> compare_print = new Vector<Vector<String>>();
   HashMap<Integer, String> myMap = new HashMap<Integer, String>();
+
+  Vector<String> lives = new Vector<String>();
+  Vector<String> enfants = new Vector<String>();
 
   Integer counter = 0;
   String m_outputFileName = null;
@@ -63,7 +67,6 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
       String enf2 = i.get(3);
       String identiqueAdd = "";
       Boolean isIdentique = false;
-      
 
       indexLoop2 = 0;
       for(Vector<String> j: compare_print) {
@@ -83,14 +86,22 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
       }
 
       if(isIdentique) {
-        m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + ", " + identiqueAdd  + "\", shape=\"circle\"]");
+        if(!lives.contains(i.get(0)) && !enfants.contains(i.get(0))) {
+          m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + ", " + identiqueAdd  + "\", shape=\"circle\"" + ", color=\"red\"]");
+        }
+        else{
+           m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + ", " + identiqueAdd  + "\", shape=\"circle\"]");
+        }
       }
       else if(i.get(4).equals(String.valueOf(indexToSkip))){
-        //System.out.println(i.get(4));
-        //System.out.println(i);
       }
       else {
-        m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + "\", shape=\"circle\"" + ", color=\"red\"]");
+        if(!lives.contains(i.get(0)) && !enfants.contains(i.get(0))) {
+          m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + "\", shape=\"circle\"" + ", color=\"red\"]");
+        }
+        else {
+          m_writer.println("  " + i.get(4) + " [label=\"" + i.get(1) + "\", xlabel=\"" + i.get(0) + "\", shape=\"circle\"]");
+        }
       }
       indexLoop++;
     }
@@ -130,6 +141,9 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTLive node, Object data) {
   	node.childrenAccept(this, null);
+    
+    lives = node.getLive();
+
   	return null;
   }
 
@@ -258,6 +272,7 @@ public class PrintExpressionDAGVisitor implements ParserVisitor
   public Object visit(ASTIdentifier node, Object data) {
     // TODO:: Présentement on imprime l'identifiant sans index, "a" au lieu de "a0"
     // Est-ce que ca peut causer des problèmes?
+    enfants.add(node.getValue());
     if(v_nodes.contains(node.getValue())) {
       return node.getValue();
     }
