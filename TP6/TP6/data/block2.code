@@ -1,0 +1,36 @@
+// TODO:: Vous devez générer les lives pour le bout de code!
+// Les lives à la fin du bloc sont : a, b, c, d, i
+
+/* Ceci est un example de ce que vous devez fournir!
+LIVE --->
+
+NODE 1 IN:
+	b
+	c
+	d
+
+NODE 1 OUT:
+	b
+	c
+	d
+
+NODE 2 IN:
+	b
+	c
+	d
+
+NODE 2 OUT:
+	b
+	c
+	d
+
+// etc.....
+
+<--- LIVE
+*/
+
+// TODO:: Vous devez transformer ce code en code intermédiaire!
+// t = d*(2*c + d);
+// c = c*c + d*d;
+// d = t;
+// i = i / 2;
