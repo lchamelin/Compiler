@@ -9,11 +9,11 @@ public class PrintMachineCodeVisitor implements ParserVisitor
   PrintWriter m_writer = null;
   Vector<String> out_node = new Vector<String>();
   Vector<String> current_in_register = new Vector<String>();
-  String re0 = "";
-  String re1 = "";
-  String re2 = "";
-  String re3 = "";
-  String re4 = "";
+  String registre0 = "";
+  String registre1 = "";
+  String registre2 = "";
+  String registre3 = "";
+  String registre4 = "";
   Integer node_out_rendu = 0;
   Vector<Vector<String>> all_out_node = new Vector<Vector<String>>();
 
@@ -119,6 +119,11 @@ public class PrintMachineCodeVisitor implements ParserVisitor
 
     // TODO:: Chaque variable a son emplacement en mémoire, mais si elle est déjà
     // dans un registre, ne la rechargez pas!
+
+    //On utilise les variable registreX afin de savoir si ces derniers sont deja utilise
+    registre0 = left;
+    registre1 = right;
+
     
     //Theses are the lives var for the current instruction
     System.out.println(all_out_node.elementAt(node_out_rendu));
@@ -136,8 +141,8 @@ public class PrintMachineCodeVisitor implements ParserVisitor
     String loadRegister2 = "";
     String storeRegister = "";
 
-    m_writer.println("LD " + r0 + ", " + left);
-    m_writer.println("LD " + r1 + ", " + right);
+    m_writer.println("LD " + r0 + ", " + refistre0);
+    m_writer.println("LD " + r1 + ", " + refistre1);
 
     if(!current_in_register.contains(left) && current_in_register.size() < 3) {
       current_in_register.add(left);
@@ -170,7 +175,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor
 
     //Increment for the lives var at the current instruction
     node_out_rendu += 1;
-    
+
     return null;
   }
 
