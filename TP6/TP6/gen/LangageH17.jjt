@@ -1,0 +1,204 @@
+options {
+	JAVA_UNICODE_ESCAPE=true;
+	STATIC=false;					// 1 seul parseur actif a la fois (+ rapide)
+	MULTI=true;						// type noeud = f(nom noeud)
+	VISITOR=true;					// Cree une methode accept(visiteur)
+	NODE_USES_PARSER=true;
+}
+
+//
+// PARSER DEFINITION
+//
+
+PARSER_BEGIN(Parser)
+
+class Parser
+{
+	public static void main(String args[])
+	{
+		String codeInputFile = args[0];
+		String codeOutputFile = args[1];
+
+		Parser c = null;
+		try{
+			c = new Parser(new java.io.FileInputStream(codeInputFile));
+		} catch (java.io.FileNotFoundException e) {
+			System.out.println("Erreur: Le fichier d'entrée " + codeInputFile + " n'a pas été trouvé.");
+			System.exit(-1);
+		}
+
+		try {
+			ASTProgram n = c.Program();
+			ParserVisitor v = new PrintMachineCodeVisitor(codeOutputFile);
+			n.jjtAccept(v, null);
+		} catch (Exception e) {
+			System.out.println("Erreur: " + '\n' + e);
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+}
+
+PARSER_END(Parser)
+
+//
+// LEXICAL ANALYSIS
+//
+
+// White space
+
+SKIP :
+{
+	< ( " " | "\t" | "\n" | "\r" )+	>
+}
+
+// Comments
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+// Keywords
+TOKEN :
+{
+	< BEGIN_LIVE : "LIVE --->" > |
+	< END_LIVE : "<--- LIVE" > |
+	< NODE : "NODE" > |
+	< IN : "IN:" > |
+	< OUT : "OUT:" >
+}
+
+// Operators
+TOKEN :
+{
+	<ASSIGN: < EQUAL > > |
+	< OPERATOR: < PLUS > | < MINUS > | < MULT > | < DIV > > |
+	< UNARY_MINUS: "minus" > |
+
+	< #PLUS: "+" > |
+	< #MINUS: "-" > |
+	< #MULT: "*" > |
+	< #DIV: "/" > |
+
+	< #EQUAL: "=" >
+}
+
+
+// Identifiers and numbers
+TOKEN :
+{
+	< IDENTIFIER: <LETTER> ( <LETTER> | <DIGIT> )* > |
+	< #LETTER: ["a"-"z","A"-"Z","_"] > |
+	< #DIGIT: ["0"-"9"] > |
+	< INTEGER: ["1"-"9"] (["0"-"9"])* | "0" >
+}
+
+
+
+
+//
+// SYNTAX ANALYSIS
+//
+
+ASTProgram Program() : { }
+{
+	Live()
+	Block() <EOF> { return jjtThis;  }
+}
+
+void Live() : { }
+{
+	<BEGIN_LIVE>
+	( LiveNode() )*
+	<END_LIVE>
+}
+
+void LiveNode() : { }
+{
+	InNode()
+	OutNode()
+}
+
+void InNode() : { Token t; }
+{
+	<NODE> IntValue() <IN>
+	( t = <IDENTIFIER> { jjtThis.addLive(t.image); } )*
+}
+
+void OutNode() : { Token t; }
+{
+	<NODE> IntValue() <OUT>
+	( t = <IDENTIFIER> { jjtThis.addLive(t.image); } )*
+}
+
+void Block() : { }
+{
+	 ( Stmt() )*
+}
+
+void Stmt() : { }
+{
+	LOOKAHEAD(4) AssignStmt() |
+	LOOKAHEAD(4) AssignUnaryStmt() |
+	LOOKAHEAD(4) AssignDirectStmt()
+}
+
+void AssignStmt() : { Token t;}
+{
+	Identifier() <ASSIGN> Expr() t = <OPERATOR> {jjtThis.setOp(t.image);} Expr()
+}
+
+void AssignUnaryStmt() : { }
+{
+	Identifier() <ASSIGN> <UNARY_MINUS> Expr()
+}
+
+void AssignDirectStmt() : { }
+{
+	Identifier() <ASSIGN> Expr()
+}
+
+void Expr() : {}
+{
+	Identifier() |
+	IntValue()
+}
+
+void Identifier() : { Token t;}
+{
+	t = <IDENTIFIER> {jjtThis.setValue(t.image);}
+}
+
+void IntValue() : { Token t;}
+{
+	t = <INTEGER> {jjtThis.setValue(Integer.parseInt(t.image));}
+}

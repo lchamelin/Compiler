@@ -31,5 +31,14 @@ NODE 2 OUT:
 
 // TODO:: Vous devez transformer ce code en code intermédiaire!
 // t = d*(b + a) + c*b;
+i1 = b + a
+i2 = d * i1
+i3 = c * b
+t = i2 + i3
+
 // a = d*b + c*a;
+i4 = d * b
+i5 = c * a
+a = i4 * i5
 // b = t;
+b = t
