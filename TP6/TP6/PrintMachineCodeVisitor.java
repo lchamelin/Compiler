@@ -1,11 +1,13 @@
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.util.Vector;
 
 public class PrintMachineCodeVisitor implements ParserVisitor
 {
 
   String m_outputFileName = null;
   PrintWriter m_writer = null;
+  Vector<String> out_node = new Vector<String>();
 
   public PrintMachineCodeVisitor(String outputFilename)  {
     m_outputFileName = outputFilename;
@@ -26,8 +28,8 @@ public class PrintMachineCodeVisitor implements ParserVisitor
       System.out.println("Failed to create ouput file.");
       return null;
     }
+    
 
-    System.out.println("HEY");
     // Visiter les enfants
     node.childrenAccept(this, null);
 
@@ -47,8 +49,12 @@ public class PrintMachineCodeVisitor implements ParserVisitor
   public Object visit(ASTLiveNode node, Object data) {
 
     // TODO:: Vous voulez probablement sauvegarder les lives pour utiliser dans les instructions...
-
+    
   	node.childrenAccept(this, null);
+
+    //Append the lives var to the vector
+    
+
   	return null;
   }
 
@@ -56,6 +62,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTInNode node, Object data) {
   	node.childrenAccept(this, null);
+
   	return null;
   }
 
@@ -63,6 +70,13 @@ public class PrintMachineCodeVisitor implements ParserVisitor
   // Valeur de retour: On ne retourne rien aux parents
   public Object visit(ASTOutNode node, Object data) {
   	node.childrenAccept(this, null);
+
+    //Get the out node of LIVES
+    out_node = node.getLive();
+
+    System.out.println(out_node);
+
+
   	return null;
   }
 
@@ -89,18 +103,42 @@ public class PrintMachineCodeVisitor implements ParserVisitor
     String left = (String)node.jjtGetChild(1).jjtAccept(this, null);
     String right = (String)node.jjtGetChild(2).jjtAccept(this, null);
 
+    //Usefull print ofr debug
+    //System.out.println(assigned);
+    //System.out.println(left);
+    //System.out.println(right);
 
+    // TODO:: Chaque variable a son emplacement en mémoire, mais si elle est déjà
+    // dans un registre, ne la rechargez pas!
     System.out.println(assigned);
     System.out.println(left);
     System.out.println(right);
-    // TODO:: Chaque variable a son emplacement en mémoire, mais si elle est déjà
-    // dans un registre, ne la rechargez pas!
+    //System.out.println(out_node);
 
+    m_writer.println("LD R1, " + left);
+    m_writer.println("LD R2, " + right);
+    if(node.getOp().equals("+")) {
+      m_writer.println("ADD R1, R1, R2");
+    }
+    if(node.getOp().equals("-")) {
+      m_writer.println("SUB R1, R1, R2");
+    }
+    if(node.getOp().equals("*")) {
+      m_writer.println("MUL R1, R1, R2");
+    }
+    if(node.getOp().equals("/")) {
+      m_writer.println("DIV R1, R1, R2");
+    }
+
+    m_writer.println("ST " + assigned + ", R1");
+    
     // TODO:: Si vos registres sont plein, déterminez quel variable que vous allez retirer
     // et si vous devez la sauvegarder!
 
     // TODO:: Écrivez la traduction en code machine, une instruction intermédiaire
     // peut générer plus qu'une instruction machine!
+
+
 
     return null;
   }

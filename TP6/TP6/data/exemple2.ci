@@ -2,7 +2,7 @@ LIVE --->
 
 NODE 1 IN:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -10,7 +10,7 @@ NODE 1 IN:
 
 NODE 1 OUT:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -19,7 +19,7 @@ NODE 1 OUT:
 
 NODE 2 IN:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -28,7 +28,7 @@ NODE 2 IN:
 
 NODE 2 OUT:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -37,7 +37,7 @@ NODE 2 OUT:
 
 NODE 3 IN:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -46,7 +46,7 @@ NODE 3 IN:
 
 NODE 3 OUT:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -55,7 +55,7 @@ NODE 3 OUT:
 
 NODE 4 IN:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -64,7 +64,7 @@ NODE 4 IN:
 
 NODE 4 OUT:
 	a
-	2
+	deux
 	b
 	c
 	t
@@ -73,7 +73,7 @@ NODE 4 OUT:
 
 NODE 5 IN:
 	a
-	2
+	deux
 	b
 	c
 	t
@@ -82,7 +82,7 @@ NODE 5 IN:
 
 NODE 5 OUT:
 	a
-	2
+	deux
 	b
 	t
 	j3
@@ -91,7 +91,7 @@ NODE 5 OUT:
 
 NODE 6 IN:
 	a
-	2
+	deux
 	b
 	t
 	j3
@@ -100,7 +100,7 @@ NODE 6 IN:
 
 NODE 6 OUT:
 	a
-	2
+	deux
 	b
 	c
 	t
@@ -108,7 +108,7 @@ NODE 6 OUT:
 
 NODE 7 IN:
 	a
-	2
+	deux
 	b
 	c
 	t
@@ -116,7 +116,7 @@ NODE 7 IN:
 
 NODE 7 OUT:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -124,7 +124,7 @@ NODE 7 OUT:
 
 NODE 8 IN:
 	a
-	2
+	deux
 	b
 	c
 	d
@@ -139,11 +139,11 @@ NODE 8 OUT:
 
 <--- LIVE
 
-j1 = 2 * c
+j1 = deux * c
 j2 = j1 + d
 t = d * j2
 j3 = d * d
 j4 = c * c
 c = j3 + j4
 d = t
-i = i / 2
+i = i / deux
