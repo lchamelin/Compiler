@@ -1,28 +1,27 @@
-LD R0, deux
+LD R0, 2
 LD R1, c
-MUL R0, R0, R1
-ST j1, R0
+MUL R2, R0, R1
+ST j1, R2
 LD R0, j1
 LD R1, d
-ADD R0, R0, R1
-ST j2, R0
+ADD R2, R0, R1
+ST j2, R2
 LD R0, d
 LD R1, j2
-MUL R0, R0, R1
-ST t, R0
+MUL R2, R0, R1
+ST t, R2
 LD R0, d
 LD R1, d
-MUL R0, R0, R1
-ST j3, R0
+MUL R2, R0, R1
+ST j3, R2
 LD R0, c
-LD R1, c
-MUL R0, R0, R1
-ST j4, R0
+MUL R2, R0, R0
+ST j4, R2
 LD R0, j3
 LD R1, j4
-ADD R0, R0, R1
-ST c, R0
+ADD R2, R0, R1
+ST c, R2
 LD R0, i
-LD R1, deux
-DIV R0, R0, R1
-ST i, R0
+LD R1, 2
+DIV R2, R0, R1
+ST i, R2

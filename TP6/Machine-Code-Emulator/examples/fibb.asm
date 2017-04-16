@@ -54,32 +54,34 @@ CLEAR
 // TODO:: PUT THE BLOCK 1 THERE!
 LD R0, b
 LD R1, a
-ADD R0, R0, R1
-ST i1, R0
+ADD R2, R0, R1
+ST i1, R2
 LD R0, d
 LD R1, i1
-MUL R0, R0, R1
-ST i2, R0
+MUL R2, R0, R1
+ST i2, R2
 LD R0, c
 LD R1, b
-MUL R0, R0, R1
-ST i3, R0
+MUL R2, R0, R1
+ST i3, R2
 LD R0, i2
 LD R1, i3
-ADD R0, R0, R1
-ST t, R0
+ADD R2, R0, R1
+ST t, R2
 LD R0, d
 LD R1, b
-MUL R0, R0, R1
-ST i4, R0
+MUL R2, R0, R1
+ST i4, R2
 LD R0, c
 LD R1, a
-MUL R0, R0, R1
-ST i5, R0
+MUL R2, R0, R1
+ST i5, R2
 LD R0, i4
 LD R1, i5
-MUL R0, R0, R1
-ST a, R0
+MUL R2, R0, R1
+ST a, R2
+LD R0, t
+ST b, R0
 
 CLEAR
 
@@ -94,32 +96,35 @@ CLEAR
 // TODO:: PUT THE BLOCK 2 THERE!
 LD R0, 2
 LD R1, c
-MUL R0, R0, R1
-ST j1, R0
+MUL R2, R0, R1
+ST j1, R2
 LD R0, j1
 LD R1, d
-ADD R0, R0, R1
-ST j2, R0
+ADD R2, R0, R1
+ST j2, R2
 LD R0, d
 LD R1, j2
-MUL R0, R0, R1
-ST t, R0
+MUL R2, R0, R1
+ST t, R2
 LD R0, d
 LD R1, d
-MUL R0, R0, R1
-ST j3, R0
+MUL R2, R0, R1
+ST j3, R2
 LD R0, c
 LD R1, c
-MUL R0, R0, R1
-ST j4, R0
+MUL R2, R0, R1
+ST j4, R2
 LD R0, j3
 LD R1, j4
-ADD R0, R0, R1
-ST c, R0
+ADD R2, R0, R1
+ST c, R2
+LD R0, t
+ST d, R0
 LD R0, i
 LD R1, 2
-DIV R0, R0, R1
-ST i, R0
+DIV R2, R0, R1
+ST i, R2
+
 
 // TODO:: This instruction is just a placeholder to let the code end, remove the code below!
 //LD R0, i
