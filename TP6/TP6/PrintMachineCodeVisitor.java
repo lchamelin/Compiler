@@ -8,6 +8,14 @@ public class PrintMachineCodeVisitor implements ParserVisitor
   String m_outputFileName = null;
   PrintWriter m_writer = null;
   Vector<String> out_node = new Vector<String>();
+  Vector<String> current_in_register = new Vector<String>();
+  String re0 = "";
+  String re1 = "";
+  String re2 = "";
+  String re3 = "";
+  String re4 = "";
+  Integer node_out_rendu = 0;
+  Vector<Vector<String>> all_out_node = new Vector<Vector<String>>();
 
   public PrintMachineCodeVisitor(String outputFilename)  {
     m_outputFileName = outputFilename;
@@ -29,10 +37,11 @@ public class PrintMachineCodeVisitor implements ParserVisitor
       return null;
     }
     
-
     // Visiter les enfants
     node.childrenAccept(this, null);
 
+    System.out.println(current_in_register);
+    System.out.println("END");
     m_writer.close();
   	return null;
   }
@@ -74,8 +83,8 @@ public class PrintMachineCodeVisitor implements ParserVisitor
     //Get the out node of LIVES
     out_node = node.getLive();
 
-    System.out.println(out_node);
-
+    //Get all the outnode in a datastructure
+    all_out_node.add(out_node);
 
   	return null;
   }
@@ -103,34 +112,55 @@ public class PrintMachineCodeVisitor implements ParserVisitor
     String left = (String)node.jjtGetChild(1).jjtAccept(this, null);
     String right = (String)node.jjtGetChild(2).jjtAccept(this, null);
 
-    //Usefull print ofr debug
+    //Usefull print for debug
     //System.out.println(assigned);
     //System.out.println(left);
     //System.out.println(right);
 
     // TODO:: Chaque variable a son emplacement en mémoire, mais si elle est déjà
     // dans un registre, ne la rechargez pas!
-    System.out.println(assigned);
-    System.out.println(left);
-    System.out.println(right);
-    //System.out.println(out_node);
+    
+    //Theses are the lives var for the current instruction
+    System.out.println(all_out_node.elementAt(node_out_rendu));
+    
+    //Les registre disponible: R0 R1 R2 ET ALTERNATIVE R0 R1 R2 R3 R4
+    String r0 = "R0";
+    String r1 = "R1";
+    String r2 = "R2";
+    String r3 = "R3";
+    String r4 = "R4";
 
-    m_writer.println("LD R1, " + left);
-    m_writer.println("LD R2, " + right);
+    //Vars to affect the right register to write the assembly code!
+    String destRegister = "";
+    String loadRegister1 = "";
+    String loadRegister2 = "";
+    String storeRegister = "";
+
+    m_writer.println("LD " + r0 + ", " + left);
+    m_writer.println("LD " + r1 + ", " + right);
+
+    if(!current_in_register.contains(left) && current_in_register.size() < 3) {
+      current_in_register.add(left);
+    }
+    if(!current_in_register.contains(right) && current_in_register.size() < 3) {
+      current_in_register.add(right);
+    }
+    
+    //Write the OP to do
     if(node.getOp().equals("+")) {
-      m_writer.println("ADD R1, R1, R2");
+      m_writer.println("ADD " + r0 + ", " + r0 + ", " + r1);
     }
     if(node.getOp().equals("-")) {
-      m_writer.println("SUB R1, R1, R2");
+      m_writer.println("SUB " + r0 + ", " + r0 + ", " + r1);
     }
     if(node.getOp().equals("*")) {
-      m_writer.println("MUL R1, R1, R2");
+      m_writer.println("MUL " + r0 + ", " + r0 + ", " + r1);
     }
     if(node.getOp().equals("/")) {
-      m_writer.println("DIV R1, R1, R2");
+      m_writer.println("DIV " + r0 + ", " + r0 + ", " + r1);
     }
 
-    m_writer.println("ST " + assigned + ", R1");
+    m_writer.println("ST " + assigned + ", " + r0);
     
     // TODO:: Si vos registres sont plein, déterminez quel variable que vous allez retirer
     // et si vous devez la sauvegarder!
@@ -138,8 +168,9 @@ public class PrintMachineCodeVisitor implements ParserVisitor
     // TODO:: Écrivez la traduction en code machine, une instruction intermédiaire
     // peut générer plus qu'une instruction machine!
 
-
-
+    //Increment for the lives var at the current instruction
+    node_out_rendu += 1;
+    
     return null;
   }
 

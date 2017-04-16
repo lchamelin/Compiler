@@ -52,6 +52,34 @@ CLEAR
 //        b = t;
 
 // TODO:: PUT THE BLOCK 1 THERE!
+LD R0, b
+LD R1, a
+ADD R0, R0, R1
+ST i1, R0
+LD R0, d
+LD R1, i1
+MUL R0, R0, R1
+ST i2, R0
+LD R0, c
+LD R1, b
+MUL R0, R0, R1
+ST i3, R0
+LD R0, i2
+LD R1, i3
+ADD R0, R0, R1
+ST t, R0
+LD R0, d
+LD R1, b
+MUL R0, R0, R1
+ST i4, R0
+LD R0, c
+LD R1, a
+MUL R0, R0, R1
+ST i5, R0
+LD R0, i4
+LD R1, i5
+MUL R0, R0, R1
+ST a, R0
 
 CLEAR
 
@@ -64,11 +92,39 @@ CLEAR
 //      i = i / 2;
 
 // TODO:: PUT THE BLOCK 2 THERE!
+LD R0, 2
+LD R1, c
+MUL R0, R0, R1
+ST j1, R0
+LD R0, j1
+LD R1, d
+ADD R0, R0, R1
+ST j2, R0
+LD R0, d
+LD R1, j2
+MUL R0, R0, R1
+ST t, R0
+LD R0, d
+LD R1, d
+MUL R0, R0, R1
+ST j3, R0
+LD R0, c
+LD R1, c
+MUL R0, R0, R1
+ST j4, R0
+LD R0, j3
+LD R1, j4
+ADD R0, R0, R1
+ST c, R0
+LD R0, i
+LD R1, 2
+DIV R0, R0, R1
+ST i, R0
 
 // TODO:: This instruction is just a placeholder to let the code end, remove the code below!
-LD R0, i
-DEC R0
-ST i, R0
+//LD R0, i
+//DEC R0
+//ST i, R0
 // TODO:: Remove the placeholder above of this line!
 
 CLEAR
