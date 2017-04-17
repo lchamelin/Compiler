@@ -119,5 +119,5 @@ i3 = c * b
 t = i2 + i3
 i4 = d * b
 i5 = c * a
-a = i4 * i5
+a = i4 + i5
 b = t

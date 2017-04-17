@@ -24,7 +24,7 @@ MUL R2, R0, R1
 ST i5, R2
 LD R0, i4
 LD R1, i5
-MUL R2, R0, R1
+ADD R2, R0, R1
 ST a, R2
 LD R0, t
 ST b, R0

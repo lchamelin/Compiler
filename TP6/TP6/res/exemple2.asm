@@ -1,4 +1,4 @@
-LD R0, 2
+LD R0, #2
 LD R1, c
 MUL R2, R0, R1
 ST j1, R2
@@ -15,13 +15,16 @@ LD R1, d
 MUL R2, R0, R1
 ST j3, R2
 LD R0, c
-MUL R2, R0, R0
+LD R1, c
+MUL R2, R0, R1
 ST j4, R2
 LD R0, j3
 LD R1, j4
 ADD R2, R0, R1
 ST c, R2
+LD R0, t
+ST d, R0
 LD R0, i
-LD R1, 2
+LD R1, #2
 DIV R2, R0, R1
 ST i, R2

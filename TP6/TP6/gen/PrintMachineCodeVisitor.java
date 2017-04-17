@@ -17,6 +17,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor
   String registre4 = "";
   Integer node_out_rendu = 0;
   Integer nbRegistreDisponible = 3;
+  Boolean isUse = false;
   Vector<Vector<String>> all_out_node = new Vector<Vector<String>>();
 
   public PrintMachineCodeVisitor(String outputFilename)  {
@@ -42,8 +43,6 @@ public class PrintMachineCodeVisitor implements ParserVisitor
     // Visiter les enfants
     node.childrenAccept(this, null);
 
-    System.out.println(current_in_register);
-    System.out.println("END");
     m_writer.close();
   	return null;
   }
@@ -123,16 +122,6 @@ public class PrintMachineCodeVisitor implements ParserVisitor
 
     // TODO:: Chaque variable a son emplacement en mémoire, mais si elle est déjà
     // dans un registre, ne la rechargez pas!
-   
-    //On veut savoir a quelle index il est et load ce registre
-      
-    //On va matcher les index 0, 1, 2 aux registre R0 R1 R2
-
-   
-
-
-    //System.out.println(current_live_or_not);
-    //System.out.println(current_in_register);
 
     //Theses are the lives var for the current instruction
     //System.out.println(all_out_node.elementAt(node_out_rendu));
@@ -150,24 +139,82 @@ public class PrintMachineCodeVisitor implements ParserVisitor
     String loadRegister2 = "";
     String storeRegister = "";
 
-    m_writer.println("LD " + r0 + ", " + left);
-    m_writer.println("LD " + r1 + ", " + right);
+    //Car on a uti;liser "deux" pour representer 2... didnt compiled otherwise
     
-    //Write the OP to do
-    if(node.getOp().equals("+")) {
-      m_writer.println("ADD " + r2 + ", " + r0 + ", " + r1);
+    if(left.equals("deux")) {
+      left = "#2";
     }
-    if(node.getOp().equals("-")) {
-      m_writer.println("SUB " + r2 + ", " + r0 + ", " + r1);
-    }
-    if(node.getOp().equals("*")) {
-      m_writer.println("MUL " + r2 + ", " + r0 + ", " + r1);
-    }
-    if(node.getOp().equals("/")) {
-      m_writer.println("DIV " + r2 + ", " + r0 + ", " + r1);
+    if(right.equals("deux")) {
+      right = "#2";
     }
 
-    m_writer.println("ST " + assigned + ", " + r2);
+    if(nbRegistreDisponible == 3) {
+      m_writer.println("LD " + r0 + ", " + left);
+      m_writer.println("LD " + r1 + ", " + right);
+      
+      //Write the OP to do 
+      if(node.getOp().equals("+")) {
+        m_writer.println("ADD " + r2 + ", " + r0 + ", " + r1);
+      }
+      if(node.getOp().equals("-")) {
+        m_writer.println("SUB " + r2 + ", " + r0 + ", " + r1);
+      }
+      if(node.getOp().equals("*")) {
+        m_writer.println("MUL " + r2 + ", " + r0 + ", " + r1);
+      }
+      if(node.getOp().equals("/")) {
+        m_writer.println("DIV " + r2 + ", " + r0 + ", " + r1);
+      }
+
+      m_writer.println("ST " + assigned + ", " + r2);
+    }
+
+
+    if(nbRegistreDisponible == 5) {
+      if(!isUse) {
+        m_writer.println("LD " + r0 + ", " + left);
+        m_writer.println("LD " + r1 + ", " + right);
+
+        //Write the OP to do 
+      if(node.getOp().equals("+")) {
+        m_writer.println("ADD " + r4 + ", " + r0 + ", " + r1);
+      }
+      if(node.getOp().equals("-")) {
+        m_writer.println("SUB " + r4 + ", " + r0 + ", " + r1);
+      }
+      if(node.getOp().equals("*")) {
+        m_writer.println("MUL " + r4 + ", " + r0 + ", " + r1);
+      }
+      if(node.getOp().equals("/")) {
+        m_writer.println("DIV " + r4 + ", " + r0 + ", " + r1);
+      }
+
+      m_writer.println("ST " + assigned + ", " + r4);
+      isUse = true;
+      }
+      else {
+        m_writer.println("LD " + r2 + ", " + left);
+        m_writer.println("LD " + r3 + ", " + right);
+
+        //Write the OP to do 
+        if(node.getOp().equals("+")) {
+          m_writer.println("ADD " + r4 + ", " + r2 + ", " + r3);
+        }
+        if(node.getOp().equals("-")) {
+          m_writer.println("SUB " + r4 + ", " + r2 + ", " + r3);
+        }
+        if(node.getOp().equals("*")) {
+          m_writer.println("MUL " + r4 + ", " + r2 + ", " + r3);
+        }
+        if(node.getOp().equals("/")) {
+          m_writer.println("DIV " + r4 + ", " + r2 + ", " + r3);
+        }
+
+        m_writer.println("ST " + assigned + ", " + r4);
+        isUse = false;        
+      }
+    }
+   
     
     // TODO:: Si vos registres sont plein, déterminez quel variable que vous allez retirer
     // et si vous devez la sauvegarder!
@@ -210,6 +257,14 @@ public class PrintMachineCodeVisitor implements ParserVisitor
     String assigned = (String)node.jjtGetChild(0).jjtAccept(this, null);
     String left = (String)node.jjtGetChild(1).jjtAccept(this, null);
 
+    String r0 = "R0";
+    String r1 = "R1";
+    String r2 = "R2";
+    String r3 = "R3";
+    String r4 = "R4";
+
+    m_writer.println("LD " + r0 + ", " + left);
+    m_writer.println("ST " + assigned + ", " + r0);
 
     // TODO:: Chaque variable a son emplacement en mémoire, mais si elle est déjà
     // dans un registre, ne la rechargez pas!
