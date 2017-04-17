@@ -16,7 +16,8 @@ public class PrintMachineCodeVisitor implements ParserVisitor
   String registre3 = "";
   String registre4 = "";
   Integer node_out_rendu = 0;
-  Integer nbRegistreDisponible = 3;
+  //CHANGER ICI POUR 5 AFIN DAVOIR 5 REGISTRE ET NE PAS OUBLIER LE FIHCIER .PY
+  Integer nbRegistreDisponible = 5;
   Boolean isUse = false;
   Vector<Vector<String>> all_out_node = new Vector<Vector<String>>();
 
